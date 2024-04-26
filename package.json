@@ -3,13 +3,24 @@
   "version": "1.0.50",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "bun run --watch src/index.ts"
+    "tailwind": "bun x tailwindcss -i public/tailwind.css -o public/styles.css --watch",
+    "dev": "bun run --watch src/index.tsx & bun tailwind"
   },
   "dependencies": {
-    "elysia": "latest"
+    "@elysiajs/html": "^1.0.2",
+    "@elysiajs/static": "^1.0.2",
+    "@elysiajs/swagger": "^1.0.4",
+    "@google-cloud/local-auth": "^2.1.0",
+    "effect": "^3.0.4",
+    "elysia": "^1.0.14",
+    "googleapis": "^105.0.0",
+    "ts-pipe-compose": "^0.2.1",
+    "uuidv7": "^0.6.3",
+    "zod": "^3.23.3"
   },
   "devDependencies": {
-    "bun-types": "latest"
+    "bun-types": "^1.1.4",
+    "tailwindcss": "^3.4.3"
   },
-  "module": "src/index.js"
+  "module": "src/index.tsx"
 }

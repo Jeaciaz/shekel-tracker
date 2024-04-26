@@ -29,6 +29,7 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+styles.css
 
 # vercel
 .vercel
@@ -40,3 +41,7 @@ yarn-error.log*
 **/*.log
 package-lock.json
 **/*.bun
+
+# google tokens stuff
+credentials.json
+token.json
