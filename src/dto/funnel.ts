@@ -9,7 +9,7 @@ const Funnel = z.object({
     id: z.string(),
 });
 
-const FunnelCreate = Funnel.omit({ id: true })
+const FunnelCreate = Funnel.omit({ id: true });
 
 export type Funnel = z.infer<typeof Funnel>;
 
@@ -31,7 +31,7 @@ export const gsToFunnel = (cols: string[]) => Effect.try({
 });
 
 export const funnelCreateToGs = (id: string, funnel: FunnelCreate) =>
-    [funnel.name, funnel.limit.toString(), funnel.color, funnel.emoji, id];
+    [funnel.name, funnel.limit, funnel.color, funnel.emoji, id];
 
 export const funnelToGs = (funnel: Funnel) =>
-    [funnel.name, funnel.limit.toString(), funnel.color, funnel.emoji, funnel.id];
+    [funnel.name, funnel.limit, funnel.color, funnel.emoji, funnel.id];

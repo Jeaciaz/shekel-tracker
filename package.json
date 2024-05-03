@@ -11,6 +11,7 @@
     "@elysiajs/static": "^1.0.2",
     "@elysiajs/swagger": "^1.0.4",
     "@google-cloud/local-auth": "^2.1.0",
+    "dayjs": "^1.11.11",
     "effect": "^3.0.4",
     "elysia": "^1.0.14",
     "googleapis": "^105.0.0",

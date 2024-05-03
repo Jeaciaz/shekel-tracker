@@ -13,6 +13,8 @@ const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
 
 type ValueInputOption = 'RAW' | 'USER_ENTERED';
 
+export type GsCol = string | number;
+
 const emitErrorOr = (unknownText: string) => (e: unknown): Error =>
     new Error(`${unknownText}: ${e instanceof Error ? e.message : JSON.stringify(e)}`)
 
@@ -81,33 +83,33 @@ export const getRanges = ({
 
 // Apparently values.append does not work properly when there is a gap in data :\
 // ====================
-// type AppendRangeArgs = {
-//     spreadsheetId: string;
-//     tableName: string;
-//     range: string;
-//     values: string[][];
-//     valueInputOption?: ValueInputOption;
-// }
-//
-// export const appendRange = ({
-//     spreadsheetId,
-//     tableName,
-//     range,
-//     values,
-//     valueInputOption = 'RAW',
-// }: AppendRangeArgs) => pipe(
-//     authorize,
-//     Effect.map(auth => google.sheets({ version: 'v4', auth })),
-//     Effect.flatMap(sheets => Effect.tryPromise({
-//         try: () => sheets.spreadsheets.values.append({
-//             spreadsheetId,
-//             range: `${tableName}!${range}`,
-//             valueInputOption,
-//             requestBody: { values },
-//         }),
-//         catch: emitErrorOr('Could not append to range')
-//     })),
-// );
+type AppendRangeArgs = {
+    spreadsheetId: string;
+    tableName: string;
+    range: string;
+    values: GsCol[][];
+    valueInputOption?: ValueInputOption;
+}
+
+export const appendRange = ({
+    spreadsheetId,
+    tableName,
+    range,
+    values,
+    valueInputOption = 'RAW',
+}: AppendRangeArgs) => pipe(
+    authorize,
+    Effect.map(auth => google.sheets({ version: 'v4', auth })),
+    Effect.flatMap(sheets => Effect.tryPromise({
+        try: () => sheets.spreadsheets.values.append({
+            spreadsheetId,
+            range: `${tableName}!${range}`,
+            valueInputOption,
+            requestBody: { values },
+        }),
+        catch: emitErrorOr('Could not append to range')
+    })),
+);
 
 type ClearRangeArgs = {
     spreadsheetId: string;
@@ -131,7 +133,7 @@ export const clearRange = ({
 type WriteRangesArgs = {
     spreadsheetId: string;
     tableName: string;
-    ranges: Record<string, string[][]>;
+    ranges: Record<string, GsCol[][]>;
     valueInputOption?: ValueInputOption;
 }
 

@@ -2,9 +2,15 @@ import { html } from "@elysiajs/html";
 import { staticPlugin } from "@elysiajs/static";
 import { Elysia } from "elysia";
 import { Effect } from "effect";
-import { deleteFunnel, getFunnelIndex, getFunnels, insertFunnel, setFunnel} from "./repo/funnels";
+import { funnelRepo } from "./repo/funnels";
 import { parseFunnel, parseFunnelCreate } from "./dto/funnel";
 import swagger from "@elysiajs/swagger";
+import { spendingsRepo } from "./repo/spendings";
+import { displaySpending, parseSpending, parseSpendingCreate } from "./dto/spending";
+import './lib/dayjs';
+
+const _TEMP_SPREADSHEET_ID = '1uXFBpCiKD1rzxi9DM-0rkpCR7g8SgivsT9A6aTIQAN8';
+const _TEMP_TABLE_NAME = '04.2024';
 
 const app = new Elysia()
     .use(html())
@@ -27,16 +33,54 @@ const app = new Elysia()
     ))
     .post('/clicked', () => <p>I was clicked</p>)
 
-    .get('/funnels', () => Effect.runPromise(getFunnels('04.2024')))
-    .post('/funnels', ({ body }) => Effect.runPromise(
-        parseFunnelCreate(body).pipe(Effect.flatMap(funnel => insertFunnel('04.2024', funnel)))
-    ))
-    .put('/funnels', ({ body }) => Effect.runPromise(Effect.gen(function*(_) {
-        const funnel = yield* _(parseFunnel(body));
-        const index = yield* _(getFunnelIndex('04.2024', funnel.id));
-        return yield* _(setFunnel('04.2024', funnel, index));
-    })))
-    .delete('/funnels/:id', ({ params: { id } }) => Effect.runPromise(deleteFunnel('04.2024', id)))
+    .group('/funnels', app => 
+        app
+            .get('/', () => Effect.runPromise(funnelRepo.get({
+                spreadsheetId: _TEMP_SPREADSHEET_ID,
+                tableName: _TEMP_TABLE_NAME,
+            })))
+            .post('/', ({ body }) => Effect.runPromise(
+                parseFunnelCreate(body).pipe(Effect.flatMap(funnel => funnelRepo.insert({
+                    spreadsheetId: _TEMP_SPREADSHEET_ID,
+                    tableName: _TEMP_TABLE_NAME,
+                    value: funnel,
+                })))
+            ))
+            .put('/', ({ body }) => Effect.runPromise(parseFunnel(body).pipe(Effect.flatMap(funnel => funnelRepo.set({
+                spreadsheetId: _TEMP_SPREADSHEET_ID,
+                tableName: _TEMP_TABLE_NAME,
+                value: funnel,
+            })))))
+            .delete('/:id', ({ params: { id } }) => Effect.runPromise(funnelRepo.delete({
+                spreadsheetId: _TEMP_SPREADSHEET_ID,
+                tableName: _TEMP_TABLE_NAME,
+                id,
+            })))
+    )
+    .group('/spendings', app =>
+        app
+            .get('/', () => Effect.runPromise(spendingsRepo.get({
+                spreadsheetId: _TEMP_SPREADSHEET_ID,
+                tableName: _TEMP_TABLE_NAME,
+            }).pipe(Effect.map(spendings => spendings.map(displaySpending)))))
+            .post('/', ({ body }) => Effect.runPromise(
+                parseSpendingCreate(body).pipe(Effect.flatMap(spending => spendingsRepo.insert({
+                    spreadsheetId: _TEMP_SPREADSHEET_ID,
+                    tableName: _TEMP_TABLE_NAME,
+                    value: spending,
+                })))
+            ))
+            .put('/', ({ body }) => Effect.runPromise(parseSpending(body).pipe(Effect.flatMap(spending => spendingsRepo.set({
+                spreadsheetId: _TEMP_SPREADSHEET_ID,
+                tableName: _TEMP_TABLE_NAME,
+                value: spending,
+            })))))
+            .delete('/:id', ({ params: { id } }) => Effect.runPromise(spendingsRepo.delete({
+                spreadsheetId: _TEMP_SPREADSHEET_ID,
+                tableName: _TEMP_TABLE_NAME,
+                id,
+            })))
+    )
     .listen(3000);
 
 type BaseHtmlProps = {
