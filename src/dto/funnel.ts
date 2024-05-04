@@ -7,15 +7,16 @@ const Funnel = z.object({
     color: z.string(),
     emoji: z.string().emoji(),
     id: z.string(),
+    remainder: z.number(),
 });
-
-const FunnelCreate = Funnel.omit({ id: true });
 
 export type Funnel = z.infer<typeof Funnel>;
 
-export type FunnelCreate = z.infer<typeof FunnelCreate>;
-
 export const parseFunnel = (data: unknown) => Effect.try(() => Funnel.parse(data));
+
+const FunnelCreate = Funnel.omit({ id: true });
+
+export type FunnelCreate = z.infer<typeof FunnelCreate>;
 
 export const parseFunnelCreate = (data: unknown) => Effect.try(() => FunnelCreate.parse(data));
 
@@ -26,12 +27,13 @@ export const gsToFunnel = (cols: string[]) => Effect.try({
         color: cols[2],
         emoji: cols[3],
         id: cols[4],
+        remainder: parseFloat(cols[5]),
     }),
     catch: e => e instanceof Error ? e : new Error('Could not parse funnel')
 });
 
 export const funnelCreateToGs = (id: string, funnel: FunnelCreate) =>
-    [funnel.name, funnel.limit, funnel.color, funnel.emoji, id];
+    [funnel.name, funnel.limit, funnel.color, funnel.emoji, id, funnel.remainder];
 
 export const funnelToGs = (funnel: Funnel) =>
-    [funnel.name, funnel.limit, funnel.color, funnel.emoji, funnel.id];
+    [funnel.name, funnel.limit, funnel.color, funnel.emoji, funnel.id, funnel.remainder];

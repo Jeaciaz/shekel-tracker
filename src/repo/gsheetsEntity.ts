@@ -62,7 +62,8 @@ export const createRepo = <T, TCreate>({
         getRanges({ spreadsheetId, tableName, ranges: [`${idColumn}${rowsOffset}:${idColumn}`] }),
         Effect.map(ranges => ranges?.[0]?.values),
         Effect.flatMap(Option.fromNullable),
-        Effect.map(rows => rows.findIndex(row => row?.[0] == id))
+        Effect.map(rows => rows.findIndex(row => row?.[0] == id)),
+        Effect.flatMap(index => index > 0 ? Effect.succeed(index) : Effect.fail(new Error(`Could not find entity with id = ${id}`)))
     );
     const set = ({ spreadsheetId, tableName, value }: SetArgs<T>) => Effect.gen(function*(_) {
         const index = yield* _(getIndex({ spreadsheetId, tableName, id: getId(value) }));

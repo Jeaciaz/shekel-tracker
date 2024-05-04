@@ -6,7 +6,7 @@ import { get } from "../lib/get";
 
 export const funnelRepo = createRepo<Funnel, FunnelCreate>({
     rangeLeft: 'A',
-    rangeRight: 'E',
+    rangeRight: 'F',
     idColumn: 'E',
     rowsOffset: 2,
     gsToValue: gsToFunnel,

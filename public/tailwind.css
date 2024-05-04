@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes pending {
+    from { opacity: 0.33; }
+    to { opacity: 0.67; }
+}
+
+.htmx-request {
+    animation: 1s ease infinite alternate pending;
+}

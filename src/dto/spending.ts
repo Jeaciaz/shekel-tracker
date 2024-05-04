@@ -31,7 +31,7 @@ export const parseSpendingCreate = (data: unknown) => Effect.try(() => SpendingC
 
 export const gsToSpending = (cols: string[]) => parseSpending({
     funnel_name: cols[0],
-    amount: parseFloat(cols[1]),
+    amount: parseFloat(cols[1].replace(',', '.')),
     datetime: cols[2],
     id: cols[3],
 });
